@@ -1,4 +1,6 @@
-package com.example.gamecatalog;
+package com.example.gamecatalog.network;
+
+import com.example.gamecatalog.model.Game;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
