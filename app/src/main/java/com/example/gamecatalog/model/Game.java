@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Game implements Serializable {
 
     @PrimaryKey
-    private int id; // Обязательно должен быть в твоём JSON! Если нет — добавь в mock-сервер
+    private int id;
 
     private String title;
     private String platform;
@@ -20,7 +20,7 @@ public class Game implements Serializable {
     private String developer;
     private String description;
 
-    // Локальные данные пользователя (не приходят с сервера)
+    //Локальные данные пользователя (не приходят с сервера)
     @ColumnInfo(defaultValue = "0")
     private boolean isFavorite = false;
 
@@ -30,10 +30,10 @@ public class Game implements Serializable {
     @ColumnInfo(defaultValue = "")
     private String comment = "";
 
-    // Конструктор по умолчанию (нужен для Room и Gson)
+    //Конструктор по умолчанию
     public Game() {}
 
-    // Геттеры и сеттеры
+    //Геттеры и сеттеры
     public int getId() {
         return id;
     }

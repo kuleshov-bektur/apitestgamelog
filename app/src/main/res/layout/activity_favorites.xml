@@ -5,14 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <!-- Toolbar внутри AppBarLayout -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:title="Каталог видеоигр"
-        app:layout_scrollFlags="scroll|enterAlways"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary" />
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:title="Избранное"
+            android:titleTextColor="@android:color/white"
+            app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Основной контент -->
     <LinearLayout
@@ -22,33 +29,23 @@
         android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="32dp"
-            android:visibility="visible" />  <!-- по умолчанию видно при загрузке -->
-
-        <!-- Сообщение "Нет данных" -->
+        <!-- Сообщение "пусто" -->
         <TextView
             android:id="@+id/textEmpty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Нет данных"
+            android:text="Нет избранных игр"
             android:textSize="18sp"
             android:gravity="center"
             android:layout_marginTop="32dp"
             android:visibility="gone" />
 
-        <!-- Список игр -->
+        <!-- Список избранного -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/recyclerFavorites"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="12dp"
-            android:paddingTop="16dp"
             android:clipToPadding="false" />
 
     </LinearLayout>

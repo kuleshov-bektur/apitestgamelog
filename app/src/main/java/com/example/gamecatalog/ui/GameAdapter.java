@@ -76,7 +76,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
         holder.tvGenre.setText(game.getGenre());
 
 
-        // Иконка платформы по URL
+        // Иконка платформы
         String platformUrl = getPlatformIconUrl(game.getPlatform());
         Glide.with(holder.itemView.getContext())
                 .load(platformUrl)
@@ -97,7 +97,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
                 .placeholder(R.drawable.placeholder_game)
                 .into(holder.ivCover);
 
-        // Отображение пользовательского рейтинга (только в избранном)
+        // Отображение пользовательского рейтинга
         if (game.isFavorite() && game.getRating() > 0) {
             holder.tvUserRating.setVisibility(View.VISIBLE);
             holder.tvUserRating.setText(String.format("★ %.1f", game.getRating()));
@@ -112,7 +112,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
             }
         });
 
-        // Клик по звезде — избранное + Toast
+        // Клик по звезде — избранное
         holder.ivFavorite.setOnClickListener(v -> {
             if (favoriteClickListener != null) {
                 boolean newFavorite = !game.isFavorite();
@@ -141,7 +141,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvInfo = itemView.findViewById(R.id.tvInfo);
             tvGenre = itemView.findViewById(R.id.tvGenre);
-            tvUserRating = itemView.findViewById(R.id.tvUserRating);     // ← добавлено
+            tvUserRating = itemView.findViewById(R.id.tvUserRating);
             ivCover = itemView.findViewById(R.id.ivCover);
             ivPlatform = itemView.findViewById(R.id.ivPlatform);
             ivFavorite = itemView.findViewById(R.id.ivFavorite);

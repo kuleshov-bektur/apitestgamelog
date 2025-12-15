@@ -83,7 +83,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Иконка избранного в правом верхнем углу -->
+        <!-- Иконка избранного -->
         <ImageView
             android:id="@+id/ivFavorite"
             android:layout_width="36dp"

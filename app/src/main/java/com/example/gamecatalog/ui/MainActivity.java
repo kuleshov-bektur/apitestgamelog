@@ -167,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
                 "По платформе (А → Я)"
         };
 
-        // Определяем текущий выбранный пункт (0 — по названию, 1 — по году, 2 — по платформе)
         int checkedItem;
         switch (sortMode) {
             case TITLE_ASC:
@@ -201,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setPositiveButton("Применить", (dialog, which) -> applyFiltersAndSort())
                 .setNegativeButton("Отмена", (dialog, which) -> {
-                    // При отмене ничего не меняем — сортировка остаётся прежней
+
                 })
                 .setNeutralButton("Сбросить", (dialog, which) -> {
                     sortMode = SortMode.NONE;
@@ -211,13 +210,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showFilterDialog() {
-        // Кастомный view для диалога
         ScrollView scrollView = new ScrollView(this);
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(32, 24, 32, 24);
 
-        // Заголовок платформ
+
         TextView tvPlatforms = new TextView(this);
         tvPlatforms.setText("Платформы");
         tvPlatforms.setTextSize(18);
@@ -233,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
             layout.addView(cb);
         }
 
-        // Заголовок жанров
         TextView tvGenres = new TextView(this);
         tvGenres.setText("Жанры");
         tvGenres.setTextSize(18);
