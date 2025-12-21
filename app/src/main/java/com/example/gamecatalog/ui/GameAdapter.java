@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -23,6 +24,8 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
 
     private OnItemClickListener itemClickListener;
     private OnFavoriteClickListener favoriteClickListener;
+    private OnEditClickListener editClickListener;
+    private OnDeleteClickListener deleteClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(Game game);
@@ -32,12 +35,28 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
         void onFavoriteClick(Game game);
     }
 
+    public interface OnEditClickListener {
+        void onEditClick(Game game);
+    }
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(Game game);
+    }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.itemClickListener = listener;
     }
 
     public void setOnFavoriteClickListener(OnFavoriteClickListener listener) {
         this.favoriteClickListener = listener;
+    }
+
+    public void setOnEditClickListener(OnEditClickListener listener) {
+        this.editClickListener = listener;
+    }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteClickListener = listener;
     }
 
     public void setGames(List<Game> newGames) {
@@ -75,7 +94,6 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
         // Жанр
         holder.tvGenre.setText(game.getGenre());
 
-
         // Иконка платформы
         String platformUrl = getPlatformIconUrl(game.getPlatform());
         Glide.with(holder.itemView.getContext())
@@ -97,7 +115,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
                 .placeholder(R.drawable.placeholder_game)
                 .into(holder.ivCover);
 
-        // Отображение пользовательского рейтинга
+        // Пользовательский рейтинг (только в избранном)
         if (game.isFavorite() && game.getRating() > 0) {
             holder.tvUserRating.setVisibility(View.VISIBLE);
             holder.tvUserRating.setText(String.format("★ %.1f", game.getRating()));
@@ -105,7 +123,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
             holder.tvUserRating.setVisibility(View.GONE);
         }
 
-        // Клик по всей карточке — детали
+        // Клик по карточке — детали
         holder.itemView.setOnClickListener(v -> {
             if (itemClickListener != null) {
                 itemClickListener.onItemClick(game);
@@ -124,6 +142,37 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.GameViewHolder
 
                 Toast.makeText(v.getContext(), toastText, Toast.LENGTH_SHORT).show();
             }
+        });
+
+        // Долгое нажатие — редактирование или удаление
+        holder.itemView.setOnLongClickListener(v -> {
+            final CharSequence[] options = {"Редактировать", "Удалить", "Отмена"};
+
+            new AlertDialog.Builder(v.getContext())
+                    .setTitle(game.getTitle())
+                    .setItems(options, (dialog, which) -> {
+                        if (which == 0) { // Редактировать
+                            if (editClickListener != null) {
+                                editClickListener.onEditClick(game);
+                            }
+                        } else if (which == 1) { // Удалить
+                            new AlertDialog.Builder(v.getContext())
+                                    .setTitle("Удалить игру?")
+                                    .setMessage("«" + game.getTitle() + "» будет безвозвратно удалена")
+                                    .setPositiveButton("Удалить", (d, w) -> {
+                                        if (deleteClickListener != null) {
+                                            deleteClickListener.onDeleteClick(game);
+                                        }
+                                        Toast.makeText(v.getContext(), "Игра удалена", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .setNegativeButton("Отмена", null)
+                                    .show();
+                        }
+                        // Отмена — ничего
+                    })
+                    .show();
+
+            return true;
         });
     }
 

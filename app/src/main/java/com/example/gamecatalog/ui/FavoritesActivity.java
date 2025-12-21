@@ -1,6 +1,10 @@
 package com.example.gamecatalog.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,12 +12,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.View;
-import android.widget.TextView;
-
-import android.content.Intent;
-
 import com.example.gamecatalog.R;
+import com.example.gamecatalog.model.Game;
 
 public class FavoritesActivity extends AppCompatActivity {
 
@@ -39,15 +39,15 @@ public class FavoritesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerFavorites);
         textEmpty = findViewById(R.id.textEmpty);
 
-        // Тот же адаптер, что и в MainActivity
+        // Адаптер
         adapter = new GameAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Та же ViewModel
+        // ViewModel
         viewModel = new ViewModelProvider(this).get(GameListViewModel.class);
 
-        //Только за избранными играми
+        // Наблюдение за избранными играми
         viewModel.getFavoriteGames().observe(this, games -> {
             if (games == null || games.isEmpty()) {
                 textEmpty.setVisibility(View.VISIBLE);
@@ -59,17 +59,29 @@ public class FavoritesActivity extends AppCompatActivity {
             }
         });
 
-        //Клик по карточке — переход в детали
+        // Клик по карточке — детали
         adapter.setOnItemClickListener(game -> {
             Intent intent = new Intent(FavoritesActivity.this, DetailActivity.class);
             intent.putExtra("game", game);
             startActivity(intent);
         });
 
-        //Клик по звезде — удаление из избранного
+        // Клик по звезде — удаление из избранного (только из избранного)
         adapter.setOnFavoriteClickListener(game -> {
             viewModel.setFavorite(game.getId(), false);
-            // LiveData автоматически обновит список
+            Toast.makeText(this, "«" + game.getTitle() + "» убрана из избранного", Toast.LENGTH_SHORT).show();
+        });
+
+        // Редактирование по long click — через отдельный DialogFragment
+        adapter.setOnEditClickListener(game -> {
+            GameEditDialogFragment.newInstance(game)
+                    .show(getSupportFragmentManager(), "edit_game");
+        });
+
+        // Удаление по long click — полное удаление из каталога
+        adapter.setOnDeleteClickListener(game -> {
+            viewModel.deleteGame(game.getId());
+            Toast.makeText(this, "«" + game.getTitle() + "» удалена из каталога", Toast.LENGTH_SHORT).show();
         });
     }
 

@@ -24,11 +24,11 @@ public class GameListViewModel extends AndroidViewModel {
     public GameListViewModel(@NonNull Application application) {
         super(application);
 
-        //Получение DAO и создание репозитория
+        // Получение DAO и создание репозитория
         GameDao gameDao = AppDatabase.getInstance(application).gameDao();
         repository = new GameRepository(gameDao);
 
-        // Подпись на данные из Room
+        // Подписка на данные из Room
         allGames = repository.getAllGames();
         favoriteGames = repository.getFavoriteGames();
 
@@ -54,8 +54,18 @@ public class GameListViewModel extends AndroidViewModel {
         repository.setFavorite(gameId, isFavorite);
     }
 
-    // Обновление игры (рейтинг + комментарий)
-    public void updateGame(Game game) {
-        repository.updateGame(game);
+    // Добавление новой игры
+    public void addGame(Game game) {
+        repository.addGame(game);
+    }
+
+    // Редактирование существующей игры
+    public void editGame(Game game) {
+        repository.editGame(game);
+    }
+
+    // Удаление игры по ID
+    public void deleteGame(int id) {
+        repository.deleteGame(id);
     }
 }

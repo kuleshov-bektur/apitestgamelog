@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamecatalog.R;
 import com.example.gamecatalog.model.Game;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView textEmpty;
+    private FloatingActionButton fabAddGame;
 
     private final List<Game> fullList = new ArrayList<>();
     private final List<Game> currentList = new ArrayList<>();
@@ -73,20 +75,41 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBar);
         textEmpty = findViewById(R.id.textEmpty);
+        fabAddGame = findViewById(R.id.fabAddGame);
 
         adapter = new GameAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+        // Клик по карточке — детали
         adapter.setOnItemClickListener(game -> {
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
             intent.putExtra("game", game);
             startActivity(intent);
         });
 
+        // Избранное
         adapter.setOnFavoriteClickListener(game -> {
             viewModel.setFavorite(game.getId(), !game.isFavorite());
             applyFiltersAndSort();
+        });
+
+        // Редактирование по long click
+        adapter.setOnEditClickListener(game -> {
+            GameEditDialogFragment.newInstance(game)
+                    .show(getSupportFragmentManager(), "edit_game");
+        });
+
+        // Удаление по long click
+        adapter.setOnDeleteClickListener(game -> {
+            viewModel.deleteGame(game.getId());
+            applyFiltersAndSort();
+        });
+
+        // FAB — добавление новой игры
+        fabAddGame.setOnClickListener(v -> {
+            GameEditDialogFragment.newInstance(null)
+                    .show(getSupportFragmentManager(), "add_game");
         });
 
         viewModel = new ViewModelProvider(this).get(GameListViewModel.class);
@@ -161,47 +184,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showSortDialog() {
-        String[] options = {
-                "По названию (А → Я)",
-                "По году (новые сначала)",
-                "По платформе (А → Я)"
-        };
+        String[] options = {"По названию (А → Я)", "По году (новые сначала)", "По платформе (А → Я)"};
 
         int checkedItem;
         switch (sortMode) {
-            case TITLE_ASC:
-                checkedItem = 0;
-                break;
-            case YEAR_DESC:
-                checkedItem = 1;
-                break;
-            case PLATFORM_ASC:
-                checkedItem = 2;
-                break;
-            default:
-                checkedItem = -1; // ничего не выбрано (радиокнопки будут пустыми)
-                break;
+            case TITLE_ASC: checkedItem = 0; break;
+            case YEAR_DESC: checkedItem = 1; break;
+            case PLATFORM_ASC: checkedItem = 2; break;
+            default: checkedItem = -1; break;
         }
 
         new AlertDialog.Builder(this)
                 .setTitle("Сортировка")
                 .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
                     switch (which) {
-                        case 0:
-                            sortMode = SortMode.TITLE_ASC;
-                            break;
-                        case 1:
-                            sortMode = SortMode.YEAR_DESC;
-                            break;
-                        case 2:
-                            sortMode = SortMode.PLATFORM_ASC;
-                            break;
+                        case 0: sortMode = SortMode.TITLE_ASC; break;
+                        case 1: sortMode = SortMode.YEAR_DESC; break;
+                        case 2: sortMode = SortMode.PLATFORM_ASC; break;
                     }
                 })
                 .setPositiveButton("Применить", (dialog, which) -> applyFiltersAndSort())
-                .setNegativeButton("Отмена", (dialog, which) -> {
-
-                })
+                .setNegativeButton("Отмена", null)
                 .setNeutralButton("Сбросить", (dialog, which) -> {
                     sortMode = SortMode.NONE;
                     applyFiltersAndSort();
@@ -214,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(32, 24, 32, 24);
-
 
         TextView tvPlatforms = new TextView(this);
         tvPlatforms.setText("Платформы");
@@ -252,22 +254,18 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("Фильтр")
                 .setView(scrollView)
                 .setPositiveButton("Применить", (dialog, which) -> {
-                    // Сохраняем платформы
                     selectedPlatforms.clear();
                     for (int i = 0; i < platformCheckBoxes.length; i++) {
                         if (platformCheckBoxes[i].isChecked()) {
                             selectedPlatforms.add(PLATFORMS[i]);
                         }
                     }
-
-                    // Сохраняем жанры
                     selectedGenres.clear();
                     for (int i = 0; i < genreCheckBoxes.length; i++) {
                         if (genreCheckBoxes[i].isChecked()) {
                             selectedGenres.add(GENRES[i]);
                         }
                     }
-
                     applyFiltersAndSort();
                 })
                 .setNeutralButton("Сбросить", (dialog, which) -> {
@@ -283,23 +281,19 @@ public class MainActivity extends AppCompatActivity {
         currentList.clear();
         currentList.addAll(fullList);
 
-        // Поиск
         if (!currentQuery.isEmpty()) {
             currentList.removeIf(game ->
                     game.getTitle() == null || !game.getTitle().toLowerCase().contains(currentQuery));
         }
 
-        // Фильтр по платформам
         if (!selectedPlatforms.isEmpty()) {
             currentList.removeIf(game -> !selectedPlatforms.contains(game.getPlatform()));
         }
 
-        // Фильтр по жанрам
         if (!selectedGenres.isEmpty()) {
             currentList.removeIf(game -> !selectedGenres.contains(game.getGenre()));
         }
 
-        // Сортировка
         switch (sortMode) {
             case TITLE_ASC:
                 Collections.sort(currentList, (g1, g2) ->

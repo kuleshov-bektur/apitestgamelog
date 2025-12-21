@@ -40,4 +40,10 @@ public interface GameDao {
 
     @Query("SELECT * FROM games")
     List<Game> getAllSync();
+
+    @Query("DELETE FROM games WHERE id = :id")
+    void deleteById(int id);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(Game game);
 }

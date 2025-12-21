@@ -104,7 +104,7 @@ public class DetailActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> {
             game.setRating(ratingBar.getRating());
             game.setComment(editComment.getText().toString());
-            viewModel.updateGame(game);
+            viewModel.editGame(game);
 
             Toast.makeText(this, "Изменения сохранены", Toast.LENGTH_SHORT).show();
             finish();

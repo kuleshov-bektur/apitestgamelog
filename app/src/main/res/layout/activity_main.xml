@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:title="Каталог видеоигр"
-        app:layout_scrollFlags="scroll|enterAlways"
+        app:layout_scrollFlags="scroll|enterAlways|snap"
         style="@style/Widget.MaterialComponents.Toolbar.Primary" />
 
     <!-- Основной контент -->
@@ -20,8 +20,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginTop="?attr/actionBarSize">
 
+        <!-- Индикатор загрузки -->
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleLarge"
@@ -29,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="32dp"
-            android:visibility="visible" />  <!-- по умолчанию видно при загрузке -->
+            android:visibility="visible" />
 
         <!-- Сообщение "Нет данных" -->
         <TextView
@@ -46,11 +48,23 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginTop="12dp"
-            android:paddingTop="16dp"
-            android:clipToPadding="false" />
+            android:clipToPadding="false"
+            android:paddingBottom="96dp" />
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        app:srcCompat="@android:drawable/ic_menu_add"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/colorPrimary"
+        android:contentDescription="Добавить новую игру" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
